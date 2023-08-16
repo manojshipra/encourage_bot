@@ -6,7 +6,7 @@ import json
 import random
 from keep_alive import keep_alive
 from replit import db
-
+import datetime as dt
 
 
 intents = Intents.default()
@@ -34,6 +34,9 @@ def update_encouragements(encouraging_message):
   else:
     db["encouragements"]=[encouraging_message]
 
+def get_weather(city_name):
+  response=requests.get("https://api.openweathermap.org/data/2.5/weather?q="+city_name+"&appid=fcd965374c3cc71ba244b958c11e09f0").json()
+  return response['weather'][0]['description']
 
 def delete_encouragements(index):
   encouragements=db["encouragements"]
@@ -85,6 +88,12 @@ async def on_message(message):
       encouragements = db["encouragements"]
     await message.channel.send(encouragements)
 
+  if msg.startswith("$weather"):
+    city_name=msg.split("$weather ",1)[1]
+    weather=get_weather(city_name)
+    await message.channel.send(weather)
+
+  
   if msg.startswith("$responding"):
     value=msg.split("$responding ",1)[1]
 
